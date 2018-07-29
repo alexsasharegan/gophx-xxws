@@ -1,0 +1,27 @@
+{
+  "name": "gophx-xxws",
+  "version": "1.0.0",
+  "description": "```sh go get github.com/gophx-xxws ```",
+  "main": "index.js",
+  "scripts": {
+	 "build:css": "purgecss --config ./purgecss.config.js --out www/build/",
+	 "build:ts": "tsc",
+	 "build": "npm run build:ts && npm run build:css",
+    "test": "npm run build && packr build main.go && ./main"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexsasharegan/gophx-xxws.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexsasharegan/gophx-xxws/issues"
+  },
+  "homepage": "https://github.com/alexsasharegan/gophx-xxws#readme",
+  "dependencies": {
+    "purgecss": "^1.0.1",
+    "typescript": "^2.9.2"
+  }
+}

@@ -1,5 +1,10 @@
 package ws
 
+import (
+	"fmt"
+	"log"
+)
+
 // Hub manages client registration and plumbing messages to/from clients.
 type Hub struct {
 	// Registered clients
@@ -51,11 +56,14 @@ func (h *Hub) Broadcast(b []byte) {
 
 // Close unregisters all connected clients.
 func (h *Hub) Close() error {
+	log.Println(fmt.Sprintf("Closing %d connections...", len(h.clients)))
 	for client := range h.clients {
 		h.unregister <- client
 	}
 
 	close(h.done)
+
+	log.Println("Connections closed.")
 
 	return nil
 }

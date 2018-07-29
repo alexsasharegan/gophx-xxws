@@ -68,8 +68,12 @@ func (c *Client) handleIncoming() {
 	// discard a message when a new one is received, so resources won't congest.
 	// We still need a blocking loop to keep our defer func from running.
 	for {
-		_, _, err := c.conn.NextReader()
+		_, _, err := c.conn.ReadMessage()
 		if err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Println(fmt.Sprintf("Unexpected client connection close: %v", err))
+				break
+			}
 			log.Println(fmt.Sprintf("Error receiving message: %v", err))
 		}
 	}
