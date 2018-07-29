@@ -25,12 +25,53 @@
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
 
+[[projects]]
+  digest = "1:b97045b2d62ec3dac588db63c7d4d7a2a69da9d89fd0edcb35350b3f8a12ff5a"
+  name = "periph.io/x/periph"
+  packages = [
+    ".",
+    "conn",
+    "conn/gpio",
+    "conn/gpio/gpioreg",
+    "conn/gpio/gpiostream",
+    "conn/i2c",
+    "conn/i2c/i2creg",
+    "conn/physic",
+    "conn/pin",
+    "conn/pin/pinreg",
+    "conn/spi",
+    "conn/spi/spireg",
+    "host",
+    "host/allwinner",
+    "host/am335x",
+    "host/bcm283x",
+    "host/beagle/black",
+    "host/beagle/bone",
+    "host/beagle/green",
+    "host/chip",
+    "host/cpu",
+    "host/distro",
+    "host/fs",
+    "host/odroidc1",
+    "host/pine64",
+    "host/pmem",
+    "host/rpi",
+    "host/sysfs",
+    "host/videocore",
+  ]
+  pruneopts = "UT"
+  revision = "000523f7fa26b78f012b93221c94434ac5b18e37"
+  version = "v3.0.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
     "github.com/gobuffalo/packr",
     "github.com/gorilla/websocket",
+    "periph.io/x/periph/conn/i2c",
+    "periph.io/x/periph/conn/i2c/i2creg",
+    "periph.io/x/periph/host",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
