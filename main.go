@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/alexsasharegan/gophx-xxws/sensor"
-	"github.com/gobuffalo/packr"
 	"log"
 	"net/http"
 	"os"
@@ -13,7 +11,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/alexsasharegan/gophx-xxws/sensor"
 	"github.com/alexsasharegan/gophx-xxws/ws"
+	"github.com/gobuffalo/packr"
 )
 
 var (
@@ -27,6 +27,11 @@ func init() {
 }
 
 func main() {
+	var acc *sensor.Accelerometer
+	if err := acc.Open(); err != nil {
+		log.Fatalln(err)
+	}
+
 	hub := ws.NewHub()
 	go hub.RunLoop()
 
@@ -59,7 +64,7 @@ MainLoop:
 	for {
 		select {
 		case <-ticker.C:
-			b, err := json.Marshal(sensor.RandData())
+			b, err := json.Marshal(nil)
 			if err != nil {
 				log.Println(fmt.Sprintf("Error serializing json: %v", err))
 				break

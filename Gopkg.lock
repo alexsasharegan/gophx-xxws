@@ -26,7 +26,7 @@
   version = "v0.8.0"
 
 [[projects]]
-  digest = "1:b97045b2d62ec3dac588db63c7d4d7a2a69da9d89fd0edcb35350b3f8a12ff5a"
+  digest = "1:0312b120ed9e26561fa7d17fc98c960046d259a514b8ba66605690b6e8efefce"
   name = "periph.io/x/periph"
   packages = [
     ".",
@@ -36,6 +36,7 @@
     "conn/gpio/gpiostream",
     "conn/i2c",
     "conn/i2c/i2creg",
+    "conn/mmr",
     "conn/physic",
     "conn/pin",
     "conn/pin/pinreg",
@@ -71,6 +72,7 @@
     "github.com/gorilla/websocket",
     "periph.io/x/periph/conn/i2c",
     "periph.io/x/periph/conn/i2c/i2creg",
+    "periph.io/x/periph/conn/mmr",
     "periph.io/x/periph/host",
   ]
   solver-name = "gps-cdcl"
