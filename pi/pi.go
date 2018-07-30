@@ -1,3 +1,4 @@
+// Package main is just a testor for reading sensor data from the rpi.
 package main
 
 import (

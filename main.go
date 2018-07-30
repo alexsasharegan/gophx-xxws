@@ -58,26 +58,91 @@ func main() {
 		}
 	}()
 
-	ticker := time.NewTicker(time.Millisecond * 16)
+	// Blocking forever loop only broken by interrupt/terminate signal.
+	broadcastLoop(hub, sig)
+	log.Println("Goodbye 👋")
+}
 
-MainLoop:
+func broadcastLoop(hub *ws.Hub, sig <-chan os.Signal) {
+	var a sensor.Accelerometer
+	if err := a.Open(); err != nil {
+		log.Fatalln("Error opening connection to sensor: ", err)
+	}
+	// Send new data twice per render cycle (60Hz)
+	ticker := time.NewTicker(time.Second / 120)
+
 	for {
 		select {
 		case <-ticker.C:
-			b, err := json.Marshal(nil)
+			d, err := getData(&a)
+			if err != nil {
+				log.Println("Error reading sensor data: ", err)
+				break
+			}
+			b, err := json.Marshal(d)
 			if err != nil {
 				log.Println(fmt.Sprintf("Error serializing json: %v", err))
 				break
 			}
 			hub.Broadcast(b)
-		case <-sig:
+		case s := <-sig:
+			log.Println("Received shutdown signal: ", s.String())
 			ticker.Stop()
-			log.Println("Closing ws connections...")
 			hub.Close()
+			a.Close()
 
-			break MainLoop
+			return
 		}
 	}
+}
 
-	log.Println("Goodbye 👋")
+type accelerationData struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	Z float64 `json:"z"`
+
+	Rotation []float64 `json:"rotation"`
+}
+
+type gyroData struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+	Z float64 `json:"z"`
+}
+
+type sensorData struct {
+	Acceleration *accelerationData `json:"acceleration"`
+	Gyro         *gyroData         `json:"gyro"`
+}
+
+func getData(a *sensor.Accelerometer) (*sensorData, error) {
+	accel, err := a.GetAcceleration()
+	if err != nil {
+		return nil, err
+	}
+
+	gyro, err := a.GetGyro()
+	if err != nil {
+		return nil, err
+	}
+
+	ax, ay, az := accel.GetValues()
+	xr := accel.GetXRotation()
+	yr := accel.GetYRotation()
+	gx, gy, gz := gyro.GetValues()
+
+	return &sensorData{
+		Acceleration: &accelerationData{
+			X:        ax,
+			Y:        ay,
+			Z:        az,
+			Rotation: []float64{xr, yr},
+		},
+		Gyro: &gyroData{
+			X: gx,
+			Y: gy,
+			Z: gz,
+		},
+	}, nil
+
 }
