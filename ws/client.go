@@ -70,11 +70,8 @@ func (c *Client) handleIncoming() {
 	for {
 		_, _, err := c.conn.ReadMessage()
 		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Println(fmt.Sprintf("Unexpected client connection close: %v", err))
-				break
-			}
-			log.Println(fmt.Sprintf("Error receiving message: %v", err))
+			log.Println(fmt.Sprintf("Error receiving message (possible close): %v", err))
+			return
 		}
 	}
 }
