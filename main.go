@@ -13,24 +13,27 @@ import (
 
 	"github.com/alexsasharegan/gophx-xxws/sensor"
 	"github.com/alexsasharegan/gophx-xxws/ws"
-	"github.com/gobuffalo/packr"
+	"github.com/rakyll/statik/fs"
+
+	_ "github.com/alexsasharegan/gophx-xxws/statik"
 )
 
 var (
-	addr   = flag.String("addr", ":3000", "http service address")
-	assets packr.Box
+	addr = flag.String("addr", "0.0.0.0:3000", "http service address")
 )
 
-func init() {
-	flag.Parse()
-	assets = packr.NewBox("./www/build")
-}
-
 func main() {
-	var acc *sensor.Accelerometer
-	if err := acc.Open(); err != nil {
+	flag.Parse()
+	statikFS, err := fs.New()
+	if err != nil {
 		log.Fatalln(err)
 	}
+
+	var a sensor.Accelerometer
+	if err := a.Open(); err != nil {
+		log.Fatalln(err)
+	}
+	defer a.Close()
 
 	hub := ws.NewHub()
 	go hub.RunLoop()
@@ -38,17 +41,24 @@ func main() {
 	sig := make(chan os.Signal)
 	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 
-	http.Handle("/", http.FileServer(assets))
+	// h := http.FileServer(assets)
+	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	fmt.Println("received request: ", r.URL.Path)
+	// 	h.ServeHTTP(w, r)
+	// })
+	http.Handle("/", http.FileServer(statikFS))
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		log.Println("[ws] Client connection received.")
+
 		err := ws.ServeWS(hub, w, r)
 		if err != nil {
 			log.Println(
-				fmt.Sprintf("Error upgrade request to ws: %v", err),
+				fmt.Sprintf("Error upgrading request to ws: %v", err),
 			)
 		}
 	})
 
-	log.Println(fmt.Sprintf("Opening server on port %s", *addr))
+	log.Println("Opening server on port ", *addr)
 	go func() {
 		if err := http.ListenAndServe(*addr, nil); err != nil {
 			log.Fatalln(
@@ -59,38 +69,34 @@ func main() {
 	}()
 
 	// Blocking forever loop only broken by interrupt/terminate signal.
-	broadcastLoop(hub, sig)
+	broadcastLoop(hub, &a, sig)
 	log.Println("Goodbye 👋")
 }
 
-func broadcastLoop(hub *ws.Hub, sig <-chan os.Signal) {
-	var a sensor.Accelerometer
-	if err := a.Open(); err != nil {
-		log.Fatalln("Error opening connection to sensor: ", err)
-	}
+func broadcastLoop(hub *ws.Hub, a *sensor.Accelerometer, sig <-chan os.Signal) {
 	// Send new data twice per render cycle (60Hz)
 	ticker := time.NewTicker(time.Second / 120)
+	defer func() {
+		ticker.Stop()
+		hub.Close()
+	}()
 
 	for {
 		select {
 		case <-ticker.C:
-			d, err := getData(&a)
+			d, err := getData(a)
 			if err != nil {
 				log.Println("Error reading sensor data: ", err)
 				break
 			}
 			b, err := json.Marshal(d)
 			if err != nil {
-				log.Println(fmt.Sprintf("Error serializing json: %v", err))
+				log.Println("Error serializing json: ", err)
 				break
 			}
 			hub.Broadcast(b)
 		case s := <-sig:
 			log.Println("Received shutdown signal: ", s.String())
-			ticker.Stop()
-			hub.Close()
-			a.Close()
-
 			return
 		}
 	}

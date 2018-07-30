@@ -31,9 +31,7 @@ function getRenderTarget(id: string) {
 }
 
 interface SensorData {
-  x: number;
-  y: number;
-  z: number;
+  [x: string]: any;
 }
 
 interface SensorMut {
@@ -43,7 +41,7 @@ interface SensorMut {
 }
 
 function Sensor(d?: SensorData): SensorMut {
-  let x: SensorData = { x: 0, y: 0, z: 0, ...d };
+  let x: SensorData = { ...d };
 
   return {
     update(y) {

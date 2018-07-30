@@ -2,7 +2,7 @@
 let ws = new WebSocket(`ws://${location.host}/ws`);
 let sensor = Sensor();
 let dataNode = getRenderTarget("data-target");
-let handler = {
+let wsHandler = {
     onMessage(evt) {
         sensor.update(evt.data);
         dataNode.innerHTML = JSON.stringify(sensor, null, 2);
@@ -16,18 +16,18 @@ let handler = {
         console.error(evt);
     },
 };
-ws.addEventListener("message", handler.onMessage);
-ws.addEventListener("close", handler.onClose);
-ws.addEventListener("error", handler.onError);
+ws.addEventListener("message", wsHandler.onMessage);
+ws.addEventListener("close", wsHandler.onClose);
+ws.addEventListener("error", wsHandler.onError);
 function getRenderTarget(id) {
     let node = document.getElementById(id);
     if (!node) {
-        throw new Error();
+        throw new Error(`missing HTMLElement #${id}`);
     }
     return node;
 }
-function Sensor() {
-    let x = { x: 0, y: 0, z: 0 };
+function Sensor(d) {
+    let x = Object.assign({}, d);
     return {
         update(y) {
             Object.assign(x, JSON.parse(y));
@@ -35,8 +35,8 @@ function Sensor() {
         toJSON() {
             return x;
         },
-        value() {
-            return x;
+        copy() {
+            return Sensor(x);
         },
     };
 }

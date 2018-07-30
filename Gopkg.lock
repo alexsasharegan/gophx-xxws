@@ -2,14 +2,6 @@
 
 
 [[projects]]
-  digest = "1:2155aded3b7f51598751f556d9a524d92b35ad4aa4bb41f2d69a0f4ca76a5bfd"
-  name = "github.com/gobuffalo/packr"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "147bee9cde84aeca6693d1b1aedc595298f24d5b"
-  version = "v1.12.0"
-
-[[projects]]
   digest = "1:43dd08a10854b2056e615d1b1d22ac94559d822e1f8b6fcc92c1a1057e85188e"
   name = "github.com/gorilla/websocket"
   packages = ["."]
@@ -18,12 +10,12 @@
   version = "v1.2.0"
 
 [[projects]]
-  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
-  name = "github.com/pkg/errors"
-  packages = ["."]
+  digest = "1:bc91590d3e20673d5e33267fc140e7dadddde0b84f2e9030547ba86859d2d13e"
+  name = "github.com/rakyll/statik"
+  packages = ["fs"]
   pruneopts = "UT"
-  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
-  version = "v0.8.0"
+  revision = "d5ad23bc79e541d7dbff7f7a7cc8f583c15fc384"
+  version = "v0.1.2"
 
 [[projects]]
   digest = "1:0312b120ed9e26561fa7d17fc98c960046d259a514b8ba66605690b6e8efefce"
@@ -68,8 +60,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/gobuffalo/packr",
     "github.com/gorilla/websocket",
+    "github.com/rakyll/statik/fs",
     "periph.io/x/periph/conn/i2c",
     "periph.io/x/periph/conn/i2c/i2creg",
     "periph.io/x/periph/conn/mmr",
