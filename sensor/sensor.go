@@ -16,10 +16,12 @@ import (
 )
 
 const (
-	// coefficient for converting radians to degrees
+	// coefficient for converting degrees to radians
 	degToRad = math.Pi / 180
+	// coefficient for converting radians to degrees
 	radToDeg = 180 / math.Pi
 
+	// Base coefficient for acceleration scaling.
 	gravBase = 1024
 	scale2g  = gravBase * 16
 	scale4g  = gravBase * 8
@@ -33,7 +35,7 @@ const (
 	// 3       ± 2000 °/s        16.4 LSB/°/s
 	lsbSensitivity = 131
 
-	// MPU-6050 Registers
+	// MPU-60X0 power registers
 	pwrMgmt1 = 0x6b
 	pwrMgmt2 = 0x6c
 )
